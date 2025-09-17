@@ -1,0 +1,18 @@
+{
+  
+  "id": "2ce5e31b-3a74-4044-bb47-d17670564a9f",
+  "name": "weather-app",
+  "projectId": "c8580bca-3c1a-4981-9b68-9ff1be85abda",
+  "ports": [
+    {
+      "expose": true,
+      "number": 5000
+    }
+  ],
+  "publicAccess": {
+    "enabled": true,
+    "domain": "auto"
+  },
+  "resourceTier": "t1",
+  "dockerFileName": "Dockerfile"
+}
