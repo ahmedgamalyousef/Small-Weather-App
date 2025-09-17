@@ -1,6 +1,11 @@
+from flask import Flask, request, jsonify, render_template
 import requests
+import os
 
-API_KEY = '6cf356ceb2ec0ff941855d4a43144e0e'  # Replace with your OpenWeatherMap API key
+app = Flask(__name__)
+
+# Get API key from environment variable
+API_KEY = os.getenv('API_KEY', '6cf356ceb2ec0ff941855d4a43144e0e')
 BASE_URL = 'https://api.openweathermap.org/data/2.5/weather'
 
 def get_weather(city):
@@ -21,18 +26,29 @@ def get_weather(city):
     else:
         return None
 
-def print_weather(weather):
-    if weather:
-        print(f"Weather in {weather['city']}:")
-        print(f"Temperature: {weather['temperature']}°C")
-        print(f"Description: {weather['description']}")
-        print(f"Humidity: {weather['humidity']}%")
-        print(f"Pressure: {weather['pressure']} hPa")
-        print(f"Wind Speed: {weather['wind_speed']} m/s")
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/weather', methods=['GET', 'POST'])
+def weather():
+    if request.method == 'POST':
+        city = request.form.get('city')
     else:
-        print("City not found or API request failed.")
+        city = request.args.get('city')
+    
+    if not city:
+        return jsonify({'error': 'City parameter is required'}), 400
+    
+    weather_data = get_weather(city)
+    if weather_data:
+        return jsonify(weather_data)
+    else:
+        return jsonify({'error': 'City not found or API request failed'}), 404
+
+@app.route('/health')
+def health():
+    return jsonify({'status': 'healthy'})
 
 if __name__ == '__main__':
-    city = input("Enter city name: ")
-    weather = get_weather(city)
-    print_weather(weather)
+    app.run(host='0.0.0.0', port=5000)
